@@ -6,67 +6,95 @@ class FirebaseAuthMethods {
   final FirebaseAuth _auth;
   FirebaseAuthMethods(this._auth);
 
+//   Future<void> signInWithEmail({
+//   required String email,
+//   required String password,
+//   required BuildContext context,
+// }) async {
+//   try {
+//     print("➡ Trying to create user...");
+//     UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
+//       email: email,
+//       password: password,
+//     );
+
+//     print("✅ User created");
+
+//     User? user = userCredential.user;
+
+//     if (user != null) {
+//       print("➡ Trying to send email verification...");
+
+//       await user.sendEmailVerification();
+
+//       print("✅ Verification email sent");
+
+//       if (context.mounted) {
+//         showSnackBar(context, "Verification email sent! Please check your inbox.");
+//       }
+//     } else {
+//       print("❌ User is null");
+//       if (context.mounted) {
+//         showSnackBar(context, "Sign up failed. User is null.");
+//       }
+//     }
+//   } on FirebaseAuthException catch (e) {
+//     print("❗ FirebaseAuthException: ${e.code} - ${e.message}");
+//     if (context.mounted) {
+//       String errorMessage = "An error occurred during sign up";
+//       switch (e.code) {
+//         case 'email-already-in-use':
+//           errorMessage = "This email is already registered";
+//           break;
+//         case 'invalid-email':
+//           errorMessage = "Invalid email address";
+//           break;
+//         case 'operation-not-allowed':
+//           errorMessage = "Email/password accounts are not enabled";
+//           break;
+//         case 'weak-password':
+//           errorMessage = "Password is too weak";
+//           break;
+//         default:
+//           errorMessage = e.message ?? errorMessage;
+//       }
+//       showSnackBar(context, errorMessage);
+//     }
+//   } catch (e) {
+//     print("❗ General Exception: $e");
+//     if (context.mounted) {
+//       showSnackBar(context, "Sign up failed. Please try again.");
+//     }
+//   }
+// }
+
+// .........................................................................................
+
   Future<void> signInWithEmail({
-  required String email,
-  required String password,
-  required BuildContext context,
-}) async {
-  try {
-    print("➡ Trying to create user...");
-    UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
-      email: email,
-      password: password,
-    );
-
-    print("✅ User created");
-
-    User? user = userCredential.user;
-
-    if (user != null) {
-      print("➡ Trying to send email verification...");
-
-      await user.sendEmailVerification();
-
-      print("✅ Verification email sent");
-
-      if (context.mounted) {
-        showSnackBar(context, "Verification email sent! Please check your inbox.");
-      }
-    } else {
-      print("❌ User is null");
-      if (context.mounted) {
-        showSnackBar(context, "Sign up failed. User is null.");
-      }
-    }
-  } on FirebaseAuthException catch (e) {
-    print("❗ FirebaseAuthException: ${e.code} - ${e.message}");
-    if (context.mounted) {
-      String errorMessage = "An error occurred during sign up";
-      switch (e.code) {
-        case 'email-already-in-use':
-          errorMessage = "This email is already registered";
-          break;
-        case 'invalid-email':
-          errorMessage = "Invalid email address";
-          break;
-        case 'operation-not-allowed':
-          errorMessage = "Email/password accounts are not enabled";
-          break;
-        case 'weak-password':
-          errorMessage = "Password is too weak";
-          break;
-        default:
-          errorMessage = e.message ?? errorMessage;
-      }
-      showSnackBar(context, errorMessage);
-    }
-  } catch (e) {
-    print("❗ General Exception: $e");
-    if (context.mounted) {
-      showSnackBar(context, "Sign up failed. Please try again.");
+    required String email,
+    required String password,
+    required BuildContext context,
+  }) async {
+    try {
+      await _auth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      await sendEmailVerification(context);
+    } on FirebaseAuthException catch (e) {
+      showSnackBar(context, e.message!);
     }
   }
+
+Future<void> sendEmailVerification(BuildContext context) async {
+  try {
+    await _auth.currentUser!.sendEmailVerification();
+    showSnackBar(context, "Email verification sent! Please check your inbox.");
+  } on FirebaseAuthException catch (e) {
+    showSnackBar(context, e.message!);
+  }
 }
+
 
 
   // Future<void> signInWithEmail({
